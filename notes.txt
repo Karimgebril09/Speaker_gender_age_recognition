@@ -1,0 +1,4 @@
+https://www.sciencedirect.com/science/article/abs/pii/S0003682X21004862
+https://medium.com/@jameschen_78678/predict-gender-with-voice-and-speech-data-347f437fc4da
+https://medium.com/@poudelnipriyanka/audio-metrics-their-importance-and-their-necessity-417950b0d848
+https://www.geeksforgeeks.org/preprocessing-the-audio-dataset/
