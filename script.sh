@@ -8,6 +8,7 @@ delete=$4
 for ((i=startt; i<=endd; i++)); do
 	if [ "$move" == "true" ]; then
 		mv $i/* .. 
+		sleep 2
 	fi
 
 	if [ "$delete" == "true" ]; then
