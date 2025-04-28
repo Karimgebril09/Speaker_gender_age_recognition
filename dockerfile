@@ -11,4 +11,4 @@ COPY ./Models /app/Models
 
 EXPOSE 80
 
-CMD ["python", "scripts/external_infer.py"]
+CMD ["python", "./scripts/external_infer.py"]

@@ -14,7 +14,7 @@ def infer(data_dir):
     print("finished prediction")
     result=[1,2,3,4,5,6,7,8,9,10] ## for test
     ## save result
-    with open("result.txt", "w") as f:
+    with open("scripts/result.txt", "w") as f:
         for i in range(len(result)):
             f.write(f"{result[i]}\n")
 
