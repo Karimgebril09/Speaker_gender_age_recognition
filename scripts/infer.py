@@ -5,14 +5,13 @@ def infer(data_dir):
     ## init
     print("loading")
     data_processor = DataProcessor(data_dir)
-    predictors=Predictors("../Models/age_model.joblib","../Models/gender_model.joblib")
+    predictors=Predictors("../Models/svm_model.pkl","../Models/scaler.pkl","../Models/pca_reducer.pkl")
     ## load data and extract features
-    # age_features,gender_features = data_processor.load_all_data()
+    features = data_processor.load_all_data()
     print("finished feature extraction")
     ## predict
-    # result=predictors.infer(gender_features,age_features)
+    result=predictors.infer(features)
     print("finished prediction")
-    result=[1,2,3,4,5,6,7,8,9,10] ## for test
     ## save result
     with open("result.txt", "w") as f:
         for i in range(len(result)):
