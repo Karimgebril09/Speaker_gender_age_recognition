@@ -12,17 +12,15 @@ class DataProcessor:
         self.audio_paths = []
         
     def load_all_data(self):
-        print("started loading data")
         files = os.listdir(self.directory)
         audio_files = [f for f in files if f.endswith('.mp3') or f.endswith('.wav')]
         audio_files.sort(key=lambda x: int(os.path.splitext(x)[0]))
         print("found audio files:", len(audio_files))
         self.audio_paths = [os.path.join(self.directory, f) for f in audio_files]
         results=None
-        with ThreadPoolExecutor(max_workers=8) as executor:
+        with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
             results = list(executor.map(self.process_single_audio, self.audio_paths))
         
-        print("finished loading data and got features")
 
         df=pd.DataFrame(results)
 
@@ -34,7 +32,5 @@ class DataProcessor:
 
     def process_single_audio(self, filepath):
         # Load the audio file
-        print(f"Processing file: {filepath}")
         features = extract_features_preprocessed(filepath)
-        print(f"Extracted features for {filepath}: {features}")
         return features

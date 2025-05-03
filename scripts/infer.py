@@ -2,20 +2,18 @@ from data_processor import DataProcessor
 from predictors import Predictors
 
 def infer(data_dir):
-    ## init
-    print("importing processor")
+    print("initializing predictors and data_processor")
     data_processor = DataProcessor(data_dir)
-    print("loading_model")
-    predictors=Predictors("../Models/svm_model.pkl","../Models/scaler.pkl","../Models/pca_reducer.pkl")
-    ## load data and extract features
+    predictors=Predictors("Models/stacking_model.pkl","Models/scaler.pkl","Models/reducer.pkl")
+    
+
     print("loading data")
     features = data_processor.load_all_data()
-    print("finished feature extraction")
-    ## predict
+
+    print("predicting")
     result=predictors.infer(features)
-    print("finished prediction")
-    ## save result
-    with open("result.txt", "w") as f:
+    
+    with open("scripts/result.txt", "w") as f:
         for i in range(len(result)):
             f.write(f"{result[i]}\n")
 

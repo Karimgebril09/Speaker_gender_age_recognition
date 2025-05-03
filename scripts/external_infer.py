@@ -4,7 +4,6 @@ import time
 
 def external_infer(infer_script_path, data_dir):
     print("hi from external_infer.py")
-    print(f"Running infer.py with data directory: {data_dir}")
     
     start_time = time.time()
 
@@ -16,7 +15,7 @@ def external_infer(infer_script_path, data_dir):
     elapsed_time = end_time - start_time
 
     # Save the time to time.txt
-    with open("time.txt", "w") as f:
+    with open("scripts/time.txt", "w") as f:
         f.write(f"{elapsed_time:.4f}\n")
 
     print(f"Inference completed in {elapsed_time:.4f} seconds.")

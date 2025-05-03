@@ -540,10 +540,7 @@ def extract_features_preprocessed(file_path):
 
         audio, sr = librosa.load(file_path, sr=22050, mono=True)
         audio = normalize_loudness(audio)
-        print("before parselmouth")
         sound = parselmouth.Sound(audio, sampling_frequency=sr)
-        print("after parselmouth")
-
         # Extract pause and phoneme features
         features = extract_pause_and_phoneme_features(audio, sr)
 
