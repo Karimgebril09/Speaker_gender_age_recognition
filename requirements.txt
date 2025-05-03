@@ -1,4 +1,7 @@
-joblib
 numpy
+pandas
 librosa
-noisereduce
+pydub
+tqdm
+scipy
+praat-parselmouth

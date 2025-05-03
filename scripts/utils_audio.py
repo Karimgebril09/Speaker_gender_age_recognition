@@ -2,12 +2,9 @@ import numpy as np
 import librosa
 from pydub import AudioSegment
 import numpy as np
-import pandas as pd
 import librosa
-import tqdm
 from multiprocessing import Pool
 import warnings
-import os
 import parselmouth
 from scipy.stats import skew, kurtosis
 from parselmouth.praat import call
@@ -540,10 +537,12 @@ stft_cols=  ['stft_mean_' + str(i) for i in range(1, 14)] + \
 # Function to extract features from a single audio file
 def extract_features_preprocessed(file_path):
     try:
-        pre_path = '../Data/'
-        audio, sr = librosa.load(pre_path + file_path, sr=22050, mono=True)
+
+        audio, sr = librosa.load(file_path, sr=22050, mono=True)
         audio = normalize_loudness(audio)
+        print("before parselmouth")
         sound = parselmouth.Sound(audio, sampling_frequency=sr)
+        print("after parselmouth")
 
         # Extract pause and phoneme features
         features = extract_pause_and_phoneme_features(audio, sr)
@@ -610,7 +609,7 @@ def apply_tranformations(df):
     df.drop(columns=['pitch_contour'], inplace=True)
 
     df.fillna(0, inplace=True)
-    
+
     log_features = [
     'stft_mean_10',
     'stft_mean_11'

@@ -3,10 +3,12 @@ from predictors import Predictors
 
 def infer(data_dir):
     ## init
-    print("loading")
+    print("importing processor")
     data_processor = DataProcessor(data_dir)
+    print("loading_model")
     predictors=Predictors("../Models/svm_model.pkl","../Models/scaler.pkl","../Models/pca_reducer.pkl")
     ## load data and extract features
+    print("loading data")
     features = data_processor.load_all_data()
     print("finished feature extraction")
     ## predict

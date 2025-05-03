@@ -3,9 +3,10 @@ import numpy as np
 
 class Predictors:
     def __init__(self, model_dir,scaler_dir,reducer_dir):
-        self.model = load(model_dir )
-        self.scaler = load(scaler_dir)
-        self.reducer = load(reducer_dir)
+        print("importing predictors")
+        # self.model = load(model_dir )
+        # self.scaler = load(scaler_dir)
+        # self.reducer = load(reducer_dir)
 
     def predict(self, data):
         return np.array(self.model.predict(data), dtype=np.int8)

@@ -24,4 +24,4 @@ def external_infer(infer_script_path, data_dir):
 
 
 if __name__ == "__main__":
-    external_infer("infer.py", "../test/")
+    external_infer("scripts/infer.py", "test/")
