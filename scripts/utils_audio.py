@@ -11,9 +11,45 @@ from parselmouth.praat import call
 import statistics
 from scipy.stats import mode as scipy_mode
 import scipy
-
-
 warnings.filterwarnings("ignore")
+COLUMNS = [
+    "total_pause_duration", "pause_count", "total_phoneme_duration", "meanF0", "stdevF0", "hnr",
+    "localJitter", "localabsoluteJitter", "rapJitter", "ppq5Jitter", "ddpJitter",
+    "localShimmer", "localdbShimmer", "apq3Shimmer", "aqpq5Shimmer", "apq11Shimmer", "ddaShimmer",
+    "f1_mean", "f2_mean", "f3_mean", "f4_mean", "f1_median", "f2_median", "f3_median", "f4_median",
+    "IQR", "sd", "sfm", "Q25", "sp.ent", "mode", "varF0", "stdF0", "minF0", "maxF0",
+    "skewnessF0", "kurtosisF0", "pitch_range", "pitch_variance",
+    "pause_to_speech_ratio", "duration_variability", "speaking_rate",
+] + \
+[
+    f"mfcc_mean_{i}" for i in range(1, 14)
+] + [
+    f"mfcc_median_{i}" for i in range(1, 14)
+] + [
+    f"mfcc_std_{i}" for i in range(1, 14)
+] + [
+    "centroid_mean", "centroid_median", "centroid_std",
+    "bandwidth_mean", "bandwidth_median", "bandwidth_std"
+] + \
+[
+    f"contrast_mean_{i}" for i in range(1, 8)
+] + [
+    f"contrast_median_{i}" for i in range(1, 8)
+] + [
+    f"contrast_std_{i}" for i in range(1, 8)
+] + [
+    "flatness_mean", "flatness_median", "flatness_std",
+    "rolloff_mean", "rolloff_median", "rolloff_std",
+    "zcr_mean", "zcr_median", "zcr_std"
+] + [
+    f"stft_mean_{i}" for i in range(1, 14)
+] + [
+    f"stft_std_{i}" for i in range(1, 14)
+] + [
+    f"stft_median_{i}" for i in range(1, 14)
+]
+
+
 
 def unsilenced_audio(audio, top_db=25):
     intervals = librosa.effects.split(audio, top_db=top_db, ref=np.max)
@@ -27,20 +63,6 @@ def normalize_loudness(audio, target_db=-20.0):
     gain = target_db - current_db
     return audio * (10 ** (gain / 20))
 
-# def load_audio(filepath):
-    # ext = filepath.split('.')[-1].lower()
-    
-    # if ext == 'mp3':
-    #     audio = AudioSegment.from_mp3(filepath)
-    #     samples = np.array(audio.get_array_of_samples()).astype(np.float32)
-    #     samples /= np.iinfo(audio.array_type).max
-        
-    #     if audio.frame_rate != sr:
-    #         samples = librosa.resample(samples, orig_sr=audio.frame_rate, target_sr=sr)
-    # else:
-    #     samples, _ = librosa.load(filepath, sr=sr)
-    
-    # return samples
 
 def measurePitch(audio, sr, sound, f0min, f0max, unit):
     sound = parselmouth.Sound(sound) # read the sound
@@ -64,7 +86,6 @@ def measurePitch(audio, sr, sound, f0min, f0max, unit):
     ddaShimmer = call([sound, pointProcess], "Get shimmer (dda)", 0, 0, 0.0001, 0.02, 1.3, 1.6)
     
     return {
-        "duration": duration,
         "meanF0": meanF0,
         "stdevF0": stdevF0,
         "hnr": hnr,
@@ -218,7 +239,7 @@ def extract_pause_and_phoneme_features(audio, sr, top_db=25):
     }
 
 
-def extract_f0_features(audio, sr):
+def extract_f0_features(audio, sound,sr):
     """
     Extracts F0-related features (mean, variance, std, min, max, skewness, kurtosis) from the audio signal.
 
@@ -230,8 +251,7 @@ def extract_f0_features(audio, sr):
         dict: A dictionary containing F0-related features.
     """
     try:
-        # Create a Parselmouth Sound object
-        sound = parselmouth.Sound(audio, sampling_frequency=sr)
+
         
         # Extract pitch (F0) using Parselmouth
         pitch = sound.to_pitch()
@@ -310,7 +330,7 @@ def calculate_speaking_rate(audio, sr):
         speaking_rate = 0  # Avoid division by zero
     return speaking_rate
 
-def extract_intonation_features(audio, sr):
+def extract_intonation_features(audio, sound,sr):
     """
     Extracts intonation features (pitch range, pitch variance, pitch contour) from the audio signal.
 
@@ -323,7 +343,7 @@ def extract_intonation_features(audio, sr):
     """
     try:
         # Create a Parselmouth Sound object
-        sound = parselmouth.Sound(audio, sampling_frequency=sr)
+
         
         # Extract pitch (F0) using Parselmouth
         pitch = sound.to_pitch()
@@ -337,7 +357,6 @@ def extract_intonation_features(audio, sr):
             return {
                 "pitch_range": 0,
                 "pitch_variance": 0,
-                "pitch_contour": []
             }
         
         # Calculate intonation features
@@ -348,13 +367,11 @@ def extract_intonation_features(audio, sr):
         return {
             "pitch_range": pitch_range,
             "pitch_variance": pitch_variance,
-            "pitch_contour": pitch_contour
         }
     except Exception as e:
         return {
             "pitch_range": 0,
             "pitch_variance": 0,
-            "pitch_contour": []
         }
 
 
@@ -559,10 +576,10 @@ def extract_features_preprocessed(file_path):
         ))
 
         # Extract F0 features
-        features.update(extract_f0_features(unsilenced, sr))
+        features.update(extract_f0_features(unsilenced,sound, sr))
         
         # Extract intonation features
-        features.update(extract_intonation_features(unsilenced, sr))
+        features.update(extract_intonation_features(unsilenced, sound,sr))
         
         # Extract rhythm features
         features.update(extract_rhythm_features(audio, sr))
@@ -586,7 +603,7 @@ def extract_features_preprocessed(file_path):
 
         return features
     except Exception as e:
-        return None
+        return {col: 0.0 for col in COLUMNS}
 
 ########################################################################################
 #####################      transformations      #######################################
@@ -602,8 +619,6 @@ def apply_sqrt_column(column):
     return np.sqrt(column + shift)
 
 def apply_tranformations(df):
-    df.drop(columns=['duration'], inplace=True)
-    df.drop(columns=['pitch_contour'], inplace=True)
 
     df.fillna(0, inplace=True)
 
@@ -622,10 +637,10 @@ def apply_tranformations(df):
         'localabsoluteJitter'
     ]
     
-    for feature in log_features:
-        df[feature+'_log'] = apply_log_column(df[feature])
+    df[[f + '_log' for f in log_features]] = df[log_features].apply(apply_log_column, axis=0)
 
-    for feature in sqrt_features:
-        df[feature+'_sqrt'] = apply_sqrt_column(df[feature])
+    # Apply sqrt transform using vectorized logic inside the function
+    df[[f + '_sqrt' for f in sqrt_features]] = df[sqrt_features].apply(apply_sqrt_column, axis=0)
+
 
     df.drop(columns=log_features + sqrt_features , inplace=True)
