@@ -1,3 +1,10 @@
+/Data/work/*/*.mp3
+/Data/work/*/*.wav
+/Data/work/*/*.zip
+
 /Data/*.mp3
 /Data/*.wav
 /Data/*.zip
+/audio
+/CSVs
+/test
